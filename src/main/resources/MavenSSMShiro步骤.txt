@@ -1,0 +1,29 @@
+1.maven web项目
+2.pom.xml(properties/java版本/servlet/tomcat/mysql/spring/hibernate/jstl/jackson)
+3.pom.xml->runas/项目update(如果出现目录不全的,重新选择一下java)
+
+1.Hibernate数据库
+	1.1实体准备(myeclipse逆向生成[生成完之后改一对多关系,加注解,时间类型微调])
+	1.2dao层ibaseDao和适配器,pagebean
+	1.3spring-hibernate.xml
+2.配置spring mvc
+	2.1web.xml(启动hibernate和spring-mvc.xml)
+	2.2spring-mvc.xml
+3.运行(一下)
+	2.1添加tomcat7插件
+4.controller编写
+5.添加拦截器
+6.随便写一个登陆页面,控制器
+----加入Shiro---- 
+
+1.导包
+2.写一个AuthorizingRealm的派生类,实现认证和授权
+	2.1用户的授权逻辑 授权方法:通过传入的身份信息,获取用户具有的权限信息(角色和权限),根据userName查询权限.
+	2.2 用户的认证逻辑 认证方法 : 通过用户传入的tokean对象进行认证操作,认证成功就返回用户的身份信息.认证失败就抛出异常,或者返回null.
+3.spring-shiro.xml,配置过滤器,安全管理器,自己的派生类
+4.web.xml 加入xml
+5.写登陆的controller
+
+
+
+

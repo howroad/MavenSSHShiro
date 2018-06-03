@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 约束 -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd 
+        http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
+	<!-- 导入propertis文件 -->
+	<context:property-placeholder location="classpath:db.properties"></context:property-placeholder>
+	<!-- 自动扫描包 -->
+	<context:component-scan base-package="com.luhao.dao,com.luhao.service"></context:component-scan>
+	<!-- Spring管理Hibernate第一步:配置数据源 -->
+	<!-- 使用c3p0连接池的配置 -->
+	<bean id="dataSourceC3p0" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="jdbcUrl" value="${url}"></property>
+		<property name="user" value="${user}"></property>
+		<property name="password" value="${password}"></property>
+		<property name="driverClass" value="${driver}"></property>
+		<property name="maxPoolSize" value="20" />
+		<property name="minPoolSize" value="5" />
+		<!-- 初始化建立的连接数 -->
+		<property name="initialPoolSize" value="10" />
+		<!-- 最大空闲时间，120秒内未被使用的连接将被丢弃 -->
+		<property name="maxIdleTime" value="120" />
+		<!-- 当连接池耗尽，且未达到最大连接数时，一次获取的连接数 -->
+		<property name="acquireIncrement" value="2" />
+		<!-- 空闲检查时间间隔， 每隔120秒检查连接池里的空闲连接 ，单位是秒 -->
+		<property name="idleConnectionTestPeriod" value="60" />
+	</bean>
+	<!-- Spring管理Hibernate第二步:配置sessionFacoty -->
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSourceC3p0"></property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">${hibernate.dialect}</prop>
+				<prop key="hibernate.show_sql">${hibernate.show_sql}</prop>
+				<prop key="hibernate.hbm2ddl.auto">${hibernate.hbm2ddl.auto}</prop>
+				<prop key="hibernate.temp.use_jdbc_metadata_defaults">${hibernate.temp.use_jdbc_metadata_defaults}</prop>
+			</props>
+		</property>
+		<property name="packagesToScan" value="com.luhao.entity"></property>
+	</bean>
+	<!-- 数据库事务第一步:配置数据库管理器 -->
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	<!-- 数据库事务第二步:配置事务增强 -->
+	<tx:advice id="transactionAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="regist" rollback-for="Execption" />
+			<tx:method name="login" read-only="true" />
+			<tx:method name="*" />
+		</tx:attributes>
+	</tx:advice>
+	<!-- 数据库事务第三步:配置切点 -->
+	<aop:config>
+		<aop:pointcut expression="execution(* com.luhao.service..*.*(..))"
+			id="transactionPoint" />
+		<aop:advisor advice-ref="transactionAdvice" pointcut-ref="transactionPoint" />
+	</aop:config>
+</beans>

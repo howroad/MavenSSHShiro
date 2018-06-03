@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/mvc
+		http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+	<!-- 扫描cotroller类 ,注意此处不能扫描service -->
+	<context:component-scan
+		base-package="com.luhao.controller"></context:component-scan>
+	<!-- 对模型视图名称的解析，即在模型视图名称添加前后缀 -->
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+		p:prefix="/jsp/" p:suffix=""></bean>
+	<!-- 静态资源 -->
+	<mvc:default-servlet-handler />
+	<!-- mvc:annotation-driven使用注解功能 -->
+	<context:annotation-config />
+	<!-- 使用jackson功能 -->
+	<mvc:annotation-driven>
+		<mvc:message-converters>
+			<bean
+				class="org.springframework.http.converter.StringHttpMessageConverter">
+				<property name="supportedMediaTypes">
+					<list>
+						<value>text/plain;charset=UTF-8</value>
+						<value>text/html;charset=UTF-8</value>
+					</list>
+				</property>
+			</bean>
+			<bean
+				class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+				<property name="supportedMediaTypes">
+					<list>
+						<value>application/json; charset=UTF-8</value>
+						<value>application/x-www-form-urlencoded; charset=UTF-8</value>
+					</list>
+				</property>
+			</bean>
+		</mvc:message-converters>
+	</mvc:annotation-driven>
+
+	<!-- 文件的上传下载 -->
+
+	<!-- 拦截器 -->
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<!-- 拦截所有 -->
+			<mvc:mapping path="/**" />
+			<!-- 不拦截的请求 -->
+			<mvc:exclude-mapping path="/html/*" />
+			<mvc:exclude-mapping path="/css/*" />
+			<mvc:exclude-mapping path="/js/*" />
+			<mvc:exclude-mapping path="/fonts/*" />
+			<mvc:exclude-mapping path="/img/*" />
+			<mvc:exclude-mapping path="/login" />
+			<mvc:exclude-mapping path="/OrgStock/*" />
+			<mvc:exclude-mapping path="/findResByCodes/*"/>
+			<mvc:exclude-mapping path="/code"/>
+			<mvc:exclude-mapping path="/checkCode"/>
+			<bean class="com.luhao.util.MyInterceptor"></bean><!-- 拦截器的类 -->
+		</mvc:interceptor>
+	</mvc:interceptors>
+</beans>
