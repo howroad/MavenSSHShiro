@@ -25,7 +25,6 @@ public class LoginController {
 	@GetMapping("login2")
 	public void login2(String userName,String password,HttpServletRequest request) {
 		System.out.println("¿ªÊ¼µÇÂ½");
-        //init
         Subject subject = SecurityUtils.getSubject();
         UsernamePasswordToken token = new UsernamePasswordToken(userName,password);
         try {
